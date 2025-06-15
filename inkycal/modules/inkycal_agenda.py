@@ -72,6 +72,9 @@ class Agenda(inkycal_module):
         else:
             self.ical_files = config['ical_files']
 
+        if config.get('iCloud'):
+                    self.icloud = config['iCloud']
+
         # Additional config
         self.timezone = get_system_tz()
 
@@ -125,6 +128,9 @@ class Agenda(inkycal_module):
 
         if self.ical_files:
             parser.load_from_file(self.ical_files)
+
+        if self.icloud:
+            parser.icloud_calendars(self.icloud['username'], self.icloud['password'])
 
         # Load events from all icalendar in timerange
         upcoming_events = parser.get_events(today, agenda_events[-1]['begin'],
