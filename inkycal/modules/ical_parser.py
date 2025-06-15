@@ -93,7 +93,7 @@ class iCalendar:
 
                     events.extend(e.data for e in events_fetched)
 
-                self.icalendars += events
+                self.icalendars += [Calendar.from_ical(e) for e in events]
                 return events
 
 
