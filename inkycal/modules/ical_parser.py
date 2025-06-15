@@ -7,6 +7,7 @@ import arrow
 from urllib.request import urlopen
 import logging
 import time
+import caldav
 
 import recurring_ical_events
 from icalendar import Calendar
@@ -64,6 +65,37 @@ class iCalendar:
         # Add the parsed icalendar/s to the self.icalendars list
         if ical: self.icalendars += ical
         logger.info('loaded iCalendars from URLs')
+
+    def icloud_calendars(self, username, password):
+        caldav_url = "https://caldav.icloud.com"
+
+        with caldav.DAVClient(
+                url=caldav_url,
+                username=username,
+                password=password,
+            ) as client:
+                ## Typically the next step is to fetch a principal object.
+                ## This will cause communication with the server.
+                my_principal = client.principal()
+
+                ## The principals calendars can be fetched like this:
+                calendars = my_principal.calendars()
+
+                events = []
+                logger.info("your principal has %i calendars:" % len(calendars))
+                for c in calendars:
+                    logger.info("    Name: %-36s  URL: %s" % (c.name, c.url))
+
+                    events_fetched = c.search(
+                        event=True,
+                        expand=False,
+                    )
+
+                    events.extend(e.data for e in events_fetched)
+
+                self.icalendars += events
+                return events
+
 
     def load_from_file(self, filepath):
         """Input a string or list of strings containing valid iCalendar filepaths
