@@ -78,7 +78,7 @@ class Calendar(inkycal_module):
         else:
             self.ical_files = config['ical_files']
 
-        if config['iCloud']:
+        if config.get('iCloud'):
             self.icloud = config['iCloud']
 
         # additional configuration
@@ -294,7 +294,7 @@ class Calendar(inkycal_module):
             if self.ical_files:
                 parser.load_from_file(self.ical_files)
             if self.icloud:
-                parser.icloud_calendars(self.icloud.username, self.icloud.password)
+                parser.icloud_calendars(self.icloud['username'], self.icloud['password'])
 
             # Filter events for full month (even past ones) for drawing event icons
             month_events = parser.get_events(month_start, month_end, self.timezone)
